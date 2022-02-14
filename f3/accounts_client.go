@@ -3,11 +3,12 @@ package f3
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	logger "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
 	"os"
-    "strconv"
+	"strconv"
 )
 
 func init() {
@@ -47,6 +48,9 @@ func (apiClient *Client) CreateAccount(createAccountRequest *CreateAccountReques
 		return nil, err
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode == http.StatusNotFound {
+		return nil, errors.New("Error while accessing Resource in the given baseURL. Check F3_BASE_URL's value")
+	}
 	if resp.StatusCode > http.StatusCreated {
 		logger.Debug("Account not created. Got Response code: ", resp.StatusCode)
 		errBody, err := ioutil.ReadAll(resp.Body)
@@ -96,6 +100,9 @@ func (apiClient *Client) FetchAccount(accountID string) (*FetchAccountResponse, 
 		return nil, err
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode == http.StatusNotFound {
+		return nil, errors.New("Error while accessing Resource in the given baseURL. Check F3_BASE_URL's value")
+	}
 	if resp.StatusCode > http.StatusOK {
 		logger.Debug("Account not fetched. Got Response code:", resp.StatusCode)
 		errBody, err := ioutil.ReadAll(resp.Body)
@@ -135,10 +142,10 @@ func (apiClient *Client) DeleteAccount(accountID string, version int) error {
 	}
 	logger.Debug("Request Object for delete account created")
 
-    q := req.URL.Query()
-    q.Add("version", strconv.Itoa(version))
+	q := req.URL.Query()
+	q.Add("version", strconv.Itoa(version))
 
-    req.URL.RawQuery = q.Encode()
+	req.URL.RawQuery = q.Encode()
 	req.Header.Set("Accept", "vnd.api+json")
 	req.Header.Set("Content-Type", "application/vnd.api+json")
 
@@ -149,6 +156,9 @@ func (apiClient *Client) DeleteAccount(accountID string, version int) error {
 		return err
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode == http.StatusNotFound {
+		return errors.New("Error while accessing Resource in the given baseURL. Check F3_BASE_URL's value")
+	}
 	if resp.StatusCode > http.StatusNoContent {
 		logger.Debug("Account not deleted. Got Response code:", resp.StatusCode)
 		errBody, err := ioutil.ReadAll(resp.Body)

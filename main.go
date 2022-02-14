@@ -22,36 +22,22 @@ func init() {
 func main() {
 	client, err := f3.NewClient()
 	if err != nil {
-		logger.Error("Form3 client creation got:%v, want:nil", err)
+		logger.Error("Form3 client creation got:", err)
 		os.Exit(1)
 	}
-	userDefinedData := []f3.Dictionary{
-		f3.Dictionary{
-			"key":   "UserKey",
-			"value": "UserValue",
-		},
-		f3.Dictionary{
-			"key":   "UserKey2",
-			"value": 21,
-		},
-	}
-	var validationType, referenceMask, acceptanceQualifier, country string = "card", "############", "same_day", "GB"
+	var country string = "GB"
 	accountAttributes := f3.AccountAttributes{
-		AccountNumber:       "41426815",
-		BankID:              "40020",
-		BankIDCode:          "GBDSC",
-		BaseCurrency:        "GBP",
-		Bic:                 "NWBKGB22",
-		Country:             &country,
-		Name:                []string{"Vishwa", "Prasad"},
-		ValidationType:      &validationType,
-		ReferenceMask:       &referenceMask,
-		AcceptanceQualifier: &acceptanceQualifier,
-		UserDefinedData:     userDefinedData,
+		AccountNumber: "41426815",
+		BankID:        "40020",
+		BankIDCode:    "GBDSC",
+		BaseCurrency:  "GBP",
+		Bic:           "NWBKGB22",
+		Country:       &country,
+		Name:          []string{"Vishwa", "Prasad"},
 	}
 	accountData := f3.AccountData{
 		Attributes:     &accountAttributes,
-		ID:             "9ea1dcb1-eac9-43cc-a58c-02e07e7b752a",
+		ID:             "9aa1dcb1-eac9-43cc-a58c-02e07e7b752a",
 		OrganisationID: "eb0bd6f5-c3f5-44b3-c677-acd23cdde73c",
 		Type:           "accounts",
 	}
@@ -65,14 +51,14 @@ func main() {
 		os.Exit(1)
 	}
 	fetchAccountResponse, err := client.FetchAccount("9ea1dcb1-eac9-43cc-a58c-02e07e7b752a")
-    if err != nil{
-        fmt.Println(err)
-        os.Exit(1)
-    }
-    err = client.DeleteAccount("9ea1dcb1-eac9-43cc-a58c-02e07e7b752a", 0)
-    if err != nil{
-        fmt.Println(err)
-    }
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	err = client.DeleteAccount("9ea1dcb1-eac9-43cc-a58c-02e07e7b752a", 0)
+	if err != nil {
+		fmt.Println(err)
+	}
 	fmt.Println(fetchAccountResponse.Data.ID)
 	fmt.Println(createAccountResponse.Data.ID)
 }

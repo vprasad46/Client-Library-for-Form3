@@ -26,7 +26,6 @@ func init() {
 }
 
 func NewClient() (*Client, error) {
-
 	baseURL := os.Getenv("F3_BASE_URL")
 	if baseURL == "" {
 		logger.Error("Base URL not set in environment for using F3 Accounts Client")
