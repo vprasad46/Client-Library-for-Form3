@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/vprasad46/interview-accountapi/f3"
 	logger "github.com/sirupsen/logrus"
+	"github.com/vprasad46/interview-accountapi/f3"
 	"os"
 )
 
@@ -51,7 +51,7 @@ func main() {
 	}
 	accountData := f3.AccountData{
 		Attributes:     &accountAttributes,
-		ID:             "fd27e265-9605-4b4b-a0e5-3003ea8dc4bc",
+		ID:             "9ea1dcb1-eac9-43cc-a58c-02e07e7b752a",
 		OrganisationID: "eb0bd6f5-c3f5-44b3-c677-acd23cdde73c",
 		Type:           "accounts",
 	}
@@ -64,5 +64,15 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+	fetchAccountResponse, err := client.FetchAccount("9ea1dcb1-eac9-43cc-a58c-02e07e7b752a")
+    if err != nil{
+        fmt.Println(err)
+        os.Exit(1)
+    }
+    err = client.DeleteAccount("9ea1dcb1-eac9-43cc-a58c-02e07e7b752a", 0)
+    if err != nil{
+        fmt.Println(err)
+    }
+	fmt.Println(fetchAccountResponse.Data.ID)
 	fmt.Println(createAccountResponse.Data.ID)
 }

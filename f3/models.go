@@ -16,7 +16,11 @@ type CreateAccountRequest struct {
 
 type CreateAccountResponse struct {
 	Data  *AccountData `json:"data"`
-	Links *Links       `json:"links"`
+	Links *Links       `json:"links,omitempty"`
+}
+
+type FetchAccountResponse struct {
+	Data *AccountData `json:"data"`
 }
 
 type AccountData struct {

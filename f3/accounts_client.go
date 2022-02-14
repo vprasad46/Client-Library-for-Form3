@@ -3,11 +3,11 @@ package f3
 import (
 	"bytes"
 	"encoding/json"
+	logger "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
 	"os"
-	logger "github.com/sirupsen/logrus"
-
+    "strconv"
 )
 
 func init() {
@@ -48,7 +48,7 @@ func (apiClient *Client) CreateAccount(createAccountRequest *CreateAccountReques
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode > http.StatusCreated {
-		logger.Debug("Account not created. Got Response code: %v", resp.StatusCode)
+		logger.Debug("Account not created. Got Response code: ", resp.StatusCode)
 		errBody, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			logger.Error("Error reading error response from create account API")
@@ -73,4 +73,96 @@ func (apiClient *Client) CreateAccount(createAccountRequest *CreateAccountReques
 		return nil, err
 	}
 	return createAccountResponse, nil
+}
+
+func (apiClient *Client) FetchAccount(accountID string) (*FetchAccountResponse, error) {
+	logger.Debug("Fetch Account Function called...")
+	url := apiClient.baseURL + "/v1/organisation/accounts/" + accountID
+
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		logger.Error("Error while creating request object for fetch account")
+		return nil, err
+	}
+	logger.Debug("Request Object for fetch account created")
+
+	req.Header.Set("Accept", "vnd.api+json")
+	req.Header.Set("Content-Type", "application/vnd.api+json")
+
+	resp, err := apiClient.httpClient.Do(req)
+	logger.Debug("Response received from fetch account API")
+	if err != nil {
+		logger.Error("Error sending request to fetch account API")
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode > http.StatusOK {
+		logger.Debug("Account not fetched. Got Response code:", resp.StatusCode)
+		errBody, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			logger.Error("Error reading error response from fetch account API")
+			return nil, err
+		}
+		var accountFetchError ErrorMessage
+		if err = json.Unmarshal(errBody, &accountFetchError); err != nil {
+			logger.Error("Error unmarshling error response from fetch account API to ErrorMessage")
+			return nil, err
+		}
+		logger.Debug("Sending back ErrorMessage object as error")
+		return nil, accountFetchError
+	}
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		logger.Error("Error reading success response from fetch account API")
+		return nil, err
+	}
+	var fetchAccountResponse *FetchAccountResponse
+	if err = json.Unmarshal(body, &fetchAccountResponse); err != nil {
+		logger.Error("Error unmarshaling success response from fetch account API to FetchAccountResponse")
+		return nil, err
+	}
+	return fetchAccountResponse, nil
+}
+
+func (apiClient *Client) DeleteAccount(accountID string, version int) error {
+	logger.Debug("Delete Account Function called...")
+	url := apiClient.baseURL + "/v1/organisation/accounts/" + accountID
+
+	req, err := http.NewRequest(http.MethodDelete, url, nil)
+	if err != nil {
+		logger.Error("Error while creating request object for delete account")
+		return err
+	}
+	logger.Debug("Request Object for delete account created")
+
+    q := req.URL.Query()
+    q.Add("version", strconv.Itoa(version))
+
+    req.URL.RawQuery = q.Encode()
+	req.Header.Set("Accept", "vnd.api+json")
+	req.Header.Set("Content-Type", "application/vnd.api+json")
+
+	resp, err := apiClient.httpClient.Do(req)
+	logger.Debug("Response received from delete account API")
+	if err != nil {
+		logger.Error("Error sending request to delete account API")
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode > http.StatusNoContent {
+		logger.Debug("Account not deleted. Got Response code:", resp.StatusCode)
+		errBody, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			logger.Error("Error reading error response from fetch account API")
+			return err
+		}
+		var accountDeleteError ErrorMessage
+		if err = json.Unmarshal(errBody, &accountDeleteError); err != nil {
+			logger.Error("Error unmarshling error response from delete account API to ErrorMessage")
+			return err
+		}
+		logger.Debug("Sending back ErrorMessage object as error")
+		return accountDeleteError
+	}
+	return nil
 }
