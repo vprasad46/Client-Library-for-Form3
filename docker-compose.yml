@@ -2,7 +2,13 @@ version: '3'
 
 services:
   accountsapi-client:
-    image:"githun.com/vprasad46/"
+    image: vprasad46/f3
+    build: .
+    environment:
+        - F3_BASE_URL=http://accountapi:8080
+        - LOG_LEVEL=DEBUG
+    depends_on:
+        - accountapi
   accountapi:
     image: form3tech/interview-accountapi:v1.0.0-50-ga251d4fc
     restart: on-failure
