@@ -12,7 +12,7 @@ A simple go client library for the Form3 REST APIs (Accounts CREATE, FETCH and D
 ## Environment variables
 
 The following environment variables need to be set when constructing the client
-using `form3.NewFromEnv`.
+using `f3.NewClient()`.
 
 | Environment variable   | Description                                   |
 |:-----------------------|:----------------------------------------------|
