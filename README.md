@@ -1,8 +1,15 @@
 # Form3 Go client Library for Accounts Resource
 
+Name: Vishwa Prasad R
+Email: vprasad46.new@gmail.com
+
+I have just started learning Go. Been at it for the last week.  It has been a roller coaster!.
+
+## Description
+
 A simple go client library for the Form3 REST APIs (Accounts CREATE, FETCH and DELETE) actions.
 
-### Environment variables
+## Environment variables
 
 The following environment variables need to be set when constructing the client
 using `form3.NewFromEnv`.
@@ -13,7 +20,7 @@ using `form3.NewFromEnv`.
 | `LOG_LEVEL`(optional)  | set to DEBUG to debug else logs above INFO    |
 
 
-### Usage
+## Usage
 ```bash
 export F3_BASE_URL="https://api.form3.tech"
 ```
@@ -28,10 +35,9 @@ if err != nil {
 }
 ```
 
-###Supported Methods
+## Supported Methods
 
-`func (apiClient *Client) CreateAccount(createAccountRequest *CreateAccountRequest) (*CreateAccountResponse, error)` - This function is used to create `Account` using `client` object
-
+### Create Account
 Example:
 ```go
 var country string = "GB"
@@ -57,8 +63,7 @@ createAccountRequest := f3.CreateAccountRequest{
 createAccountResponse, err := client.CreateAccount(&createAccountRequest)
 ```
 
-`func (apiClient *Client) FetchAccount(accountID string) (*FetchAccountResponse, error)` - This function is used to fetch `Account Details` using `client` object
-
+### Fetch Account
 Example:
 ```go
 fetchAccountResponse, err := client.FetchAccount("9ea1dcb1-eac9-43cc-a58c-02e07e7b752a")
@@ -67,8 +72,8 @@ if err != nil {
 	os.Exit(1)
 }
 ```
-`func (apiClient *Client) DeleteAccount(accountID string, version int) error` - This function is used to delete `Account` using `client` object
 
+### Delete Account 
 Example
 ```go
 err = client.DeleteAccount("9ea1dcb1-eac9-43cc-a58c-02e07e7b752a", 0)
@@ -77,9 +82,12 @@ if err != nil {
 }
 ```
 
-### REST API Documentation
+## REST API Documentation
 
 For further details on the API behind client please visit: https://api-docs.form3.tech/api.html
+
+
+
 
 
 
