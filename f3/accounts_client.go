@@ -31,7 +31,7 @@ func (apiClient *Client) CreateAccount(createAccountRequest *CreateAccountReques
 		logger.Error("Error occured while marshaling CreateAccountRequest object as json")
 		return nil, err
 	}
-	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(data))
+	req, err := NewRequest(http.MethodPost, url, bytes.NewReader(data))
 	if err != nil {
 		logger.Error("Error while creating request object for create account")
 		return nil, err
@@ -83,7 +83,7 @@ func (apiClient *Client) FetchAccount(accountID string) (*FetchAccountResponse, 
 	logger.Debug("Fetch Account Function called...")
 	url := apiClient.baseURL + "/v1/organisation/accounts/" + accountID
 
-	req, err := http.NewRequest(http.MethodGet, url, nil)
+	req, err := NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		logger.Error("Error while creating request object for fetch account")
 		return nil, err
@@ -135,7 +135,7 @@ func (apiClient *Client) DeleteAccount(accountID string, version int) error {
 	logger.Debug("Delete Account Function called...")
 	url := apiClient.baseURL + "/v1/organisation/accounts/" + accountID
 
-	req, err := http.NewRequest(http.MethodDelete, url, nil)
+	req, err := NewRequest(http.MethodDelete, url, nil)
 	if err != nil {
 		logger.Error("Error while creating request object for delete account")
 		return err

@@ -4,13 +4,12 @@ import (
 	"errors"
 	"fmt"
 	logger "github.com/sirupsen/logrus"
-	"net/http"
 	"os"
 )
 
 type Client struct {
 	baseURL    string
-	httpClient *http.Client
+	httpClient *RequestClient
 }
 
 func init() {
@@ -31,7 +30,7 @@ func NewClient() (*Client, error) {
 		logger.Error("Base URL not set in environment for using F3 Accounts Client")
 		return nil, errors.New("base url not set in environment")
 	}
-	client := Client{baseURL: baseURL, httpClient: &http.Client{}}
+	client := Client{baseURL: baseURL, httpClient: NewRequestClient()}
 	logger.Debug("F3 Accounts Client Creation Successful")
 	return &client, nil
 }
