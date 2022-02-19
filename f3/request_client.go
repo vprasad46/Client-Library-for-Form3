@@ -33,7 +33,6 @@ func (c *RequestClient) drainBody(body io.ReadCloser) {
 
 func (c *RequestClient) Do(req *Request) (*http.Response, error) {
 	logger.Debug(req.Method, req.URL)
-	client, _ := NewClient()
 	i := 1
 	for {
 		if req.body != nil {
@@ -64,7 +63,7 @@ func IsRetryNeeded(resp *http.Response, err error) (bool, error) {
 	if err != nil {
 		return true, err
 	}
-	if resp.StatusCode >= 0 {
+	if resp.StatusCode >= 429 {
 		return true, nil
 	}
 	return false, nil
