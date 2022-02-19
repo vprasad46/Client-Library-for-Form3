@@ -19,7 +19,7 @@ func NewRequestObject() f3.CreateAccountRequest {
 		BaseCurrency:            "GBP",
 		Bic:                     "NWBKGB22",
 		Country:                 &country,
-		Name:                    []string{"Vishwa", "Prasad"},
+		Name:                    []string{"Vishwa"},
 		AlternativeNames:        []string{"Vishwa1", "Prasad1"},
 		Iban:                    "GB11NWBK40030041426819",
 		JointAccount:            &jointAccount,
@@ -80,7 +80,60 @@ func TestAccountCreation(t *testing.T) {
 
 }
 
-func TestFailedAccountCreation(t *testing.T) {
+func TestAccountCreationWithOnlyRequiredAttributes(t *testing.T) {
+
+	client, err := f3.NewClient()
+	require.Nil(t, err)
+
+	var country string = "GB"
+	accountAttributes := f3.AccountAttributes{
+		Country: &country,
+		Name:    []string{"Vishwa", "Prasad"},
+	}
+	accountData := f3.AccountData{
+		Attributes:     &accountAttributes,
+		ID:             "8aa1dcb1-eac9-43cc-a58c-02e07e7b752c",
+		OrganisationID: "eb0bd6f5-c3f5-44b3-c677-acd23cdde73c",
+		Type:           "accounts",
+	}
+
+	createAccountRequest := f3.CreateAccountRequest{
+		Data: &accountData,
+	}
+	createAccountResponse, err := client.CreateAccount(&createAccountRequest)
+	require.Nil(t, err)
+
+	err = client.DeleteAccount(createAccountResponse.Data.ID, 0)
+	require.Nil(t, err)
+}
+
+func TestAccountCreationWithoutRequiredAttributes(t *testing.T) {
+	client, err := f3.NewClient()
+	require.Nil(t, err)
+	/*
+	   Creating Account with Empty Account Data
+	*/
+	accountData := f3.AccountData{}
+	createAccountRequest := f3.CreateAccountRequest{
+		Data: &accountData,
+	}
+	_, err = client.CreateAccount(&createAccountRequest)
+	require.Error(t, err)
+	/*
+	   AccountData with Empty AccountAttributes
+	*/
+	accountAttributes := f3.AccountAttributes{}
+	accountData = f3.AccountData{
+		Attributes: &accountAttributes,
+	}
+	createAccountRequest = f3.CreateAccountRequest{
+		Data: &accountData,
+	}
+	_, err = client.CreateAccount(&createAccountRequest)
+	require.Error(t, err)
+}
+
+func TestDuplicateAccountCreation(t *testing.T) {
 	client, err := f3.NewClient()
 	require.Nil(t, err)
 
@@ -110,32 +163,40 @@ func TestAccountFetch(t *testing.T) {
 	require.Nil(t, err)
 }
 
-func TestFailedAccountFetch(t *testing.T){
-    client, err := f3.NewClient()
-    require.Nil(t, err)
+func TestFailedAccountFetch(t *testing.T) {
+	client, err := f3.NewClient()
+	require.Nil(t, err)
 
-    _ , err = client.FetchAccount(uuid.New().String())
-    require.Error(t, err)
+	createAccountRequest := NewRequestObject()
+	createAccountResponse, err := client.CreateAccount(&createAccountRequest)
+	require.Nil(t, err)
+
+	err = client.DeleteAccount(createAccountResponse.Data.ID, 0)
+	require.Nil(t, err)
+
+	_, err = client.FetchAccount(createAccountResponse.Data.ID)
+	require.Error(t, err)
 }
 
-func TestAccountDelete(t *testing.T){
-    client, err := f3.NewClient()
-    require.Nil(t, err)
+func TestAccountDelete(t *testing.T) {
+	client, err := f3.NewClient()
+	require.Nil(t, err)
 
-    createAccountRequest := NewRequestObject()
-    createAccountResponse, err := client.CreateAccount(&createAccountRequest)
-    require.Nil(t, err)
+	createAccountRequest := NewRequestObject()
+	createAccountResponse, err := client.CreateAccount(&createAccountRequest)
+	require.Nil(t, err)
 
-    err = client.DeleteAccount(createAccountResponse.Data.ID, 0)
-    require.Nil(t, err)
+	err = client.DeleteAccount(createAccountResponse.Data.ID, 0)
+	require.Nil(t, err)
+
+	_, err = client.FetchAccount(createAccountResponse.Data.ID)
+	require.Error(t, err)
 }
 
-func TestFailedAccountDelete(t *testing.T){
-    client, err := f3.NewClient()
-    require.Nil(t, err)
+func TestFailedAccountDelete(t *testing.T) {
+	client, err := f3.NewClient()
+	require.Nil(t, err)
 
-    err = client.DeleteAccount(uuid.New().String(), 0)
-    require.Error(t, err)
+	err = client.DeleteAccount(uuid.New().String(), 0)
+	require.Error(t, err)
 }
-
-
