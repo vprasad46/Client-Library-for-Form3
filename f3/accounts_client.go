@@ -51,7 +51,7 @@ func (apiClient *Client) CreateAccount(createAccountRequest *CreateAccountReques
 	if resp.StatusCode == http.StatusNotFound {
 		return nil, errors.New("Error while accessing Resource in the given baseURL. Check F3_BASE_URL's value")
 	}
-	if resp.StatusCode > http.StatusCreated {
+	if resp.StatusCode != http.StatusCreated {
 		logger.Debug("Account not created. Got Response code: ", resp.StatusCode)
 		errBody, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
@@ -103,7 +103,7 @@ func (apiClient *Client) FetchAccount(accountID string) (*FetchAccountResponse, 
 	if resp.StatusCode == http.StatusNotFound {
 		return nil, errors.New("Error while accessing Resource in the given baseURL. Check F3_BASE_URL's value")
 	}
-	if resp.StatusCode > http.StatusOK {
+	if resp.StatusCode != http.StatusOK {
 		logger.Debug("Account not fetched. Got Response code:", resp.StatusCode)
 		errBody, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
@@ -159,7 +159,7 @@ func (apiClient *Client) DeleteAccount(accountID string, version int) error {
 	if resp.StatusCode == http.StatusNotFound {
 		return errors.New("Error while accessing Resource in the given baseURL. Check F3_BASE_URL's value")
 	}
-	if resp.StatusCode > http.StatusNoContent {
+	if resp.StatusCode != http.StatusNoContent {
 		logger.Debug("Account not deleted. Got Response code:", resp.StatusCode)
 		errBody, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
