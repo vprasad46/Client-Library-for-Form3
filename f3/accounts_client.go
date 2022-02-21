@@ -31,7 +31,7 @@ func (apiClient *Client) CreateAccount(createAccountRequest *CreateAccountReques
 		logger.Error("Error occured while marshaling CreateAccountRequest object as json")
 		return nil, err
 	}
-	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(data))
+	req, err := NewRequest(http.MethodPost, url, bytes.NewReader(data))
 	if err != nil {
 		logger.Error("Error while creating request object for create account")
 		return nil, err
@@ -51,7 +51,7 @@ func (apiClient *Client) CreateAccount(createAccountRequest *CreateAccountReques
 	if resp.StatusCode == http.StatusNotFound {
 		return nil, errors.New("Error while accessing Resource in the given baseURL. Check F3_BASE_URL's value")
 	}
-	if resp.StatusCode > http.StatusCreated {
+	if resp.StatusCode != http.StatusCreated {
 		logger.Debug("Account not created. Got Response code: ", resp.StatusCode)
 		errBody, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
@@ -83,7 +83,7 @@ func (apiClient *Client) FetchAccount(accountID string) (*FetchAccountResponse, 
 	logger.Debug("Fetch Account Function called...")
 	url := apiClient.baseURL + "/v1/organisation/accounts/" + accountID
 
-	req, err := http.NewRequest(http.MethodGet, url, nil)
+	req, err := NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		logger.Error("Error while creating request object for fetch account")
 		return nil, err
@@ -103,7 +103,7 @@ func (apiClient *Client) FetchAccount(accountID string) (*FetchAccountResponse, 
 	if resp.StatusCode == http.StatusNotFound {
 		return nil, errors.New("Error while accessing Resource in the given baseURL. Check F3_BASE_URL's value")
 	}
-	if resp.StatusCode > http.StatusOK {
+	if resp.StatusCode != http.StatusOK {
 		logger.Debug("Account not fetched. Got Response code:", resp.StatusCode)
 		errBody, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
@@ -135,7 +135,7 @@ func (apiClient *Client) DeleteAccount(accountID string, version int) error {
 	logger.Debug("Delete Account Function called...")
 	url := apiClient.baseURL + "/v1/organisation/accounts/" + accountID
 
-	req, err := http.NewRequest(http.MethodDelete, url, nil)
+	req, err := NewRequest(http.MethodDelete, url, nil)
 	if err != nil {
 		logger.Error("Error while creating request object for delete account")
 		return err
@@ -159,7 +159,7 @@ func (apiClient *Client) DeleteAccount(accountID string, version int) error {
 	if resp.StatusCode == http.StatusNotFound {
 		return errors.New("Error while accessing Resource in the given baseURL. Check F3_BASE_URL's value")
 	}
-	if resp.StatusCode > http.StatusNoContent {
+	if resp.StatusCode != http.StatusNoContent {
 		logger.Debug("Account not deleted. Got Response code:", resp.StatusCode)
 		errBody, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
