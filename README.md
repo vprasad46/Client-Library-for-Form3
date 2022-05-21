@@ -1,10 +1,5 @@
 # Form3 Go client Library for Accounts Resource
 
-Name: Vishwa Prasad R
-Email: vprasad46.new@gmail.com
-
-I have just started learning Go. Been at it for the last week.  It has been a roller coaster!.
-
 ## Description
 
 A simple go client library for the Form3 REST APIs (Accounts CREATE, FETCH and DELETE) actions.
